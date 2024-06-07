@@ -4,7 +4,7 @@
 
 steps:
   - label: ":docker: login"
-    - commands: "docker push rocmshared/vllm-ci:{{ docker_image }}"
+    commands: "docker push rocmshared/vllm-ci:{{ docker_image }}"
       plugins:
         - docker-login#v2.0.1:
           username: rocmshared
