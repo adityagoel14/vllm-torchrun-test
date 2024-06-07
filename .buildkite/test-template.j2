@@ -4,10 +4,9 @@
 {% set default_working_dir = "/vllm-workspace/tests" %}
 
 steps:
-  group: "AMD Tests"
+  - group: "AMD Tests"
     steps:
       - label: ":docker: build image"
-        key: "amd build"
         commands:
           - "docker build --build-arg max_jobs=16 --tag {{ docker_image_amd }} --target test --progress plain ."
           - "docker push {{ docker_image_amd }}"
@@ -31,8 +30,6 @@ steps:
         command: bash .buildkite/run-amd-test.sh "cd {{ (step.working_dir or default_working_dir) | safe  }} ; {{ step.command  or (step.commands | join(" ; ")) | safe }}"
         env:
           DOCKER_BUILDKIT: "1"
-        depends_on:
-          - "amd build"
         soft_fail: true
     {% endif %}
     {% endfor %}
