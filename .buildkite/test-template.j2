@@ -4,9 +4,6 @@
 
 steps:
   - label: ":docker: build image"      
-    - commands:
-      - "docker build --build-arg max_jobs=16 --tag {{ docker_image }} --target test --progress plain ."
-      - "docker push rocmshared/vllm-ci:{{ docker_image }}"
     env:
       DOCKER_BUILDKIT: "1"
     retr 
@@ -16,7 +13,7 @@ steps:
         - exit_status: -10  # Agent was lost
           limit: 5
   - wait
-
+  
   - group: "AMD Tests"
     depends_on: ~
     steps:
