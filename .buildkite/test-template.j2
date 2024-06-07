@@ -5,8 +5,8 @@
 steps:
   - label: ":docker: login"
     plugins:
-      - docker-login#v3.0.0:
-        username: rocmshared
+      - docker-login#v2.0.1:
+          username: rocmshared
   - label: ":docker: build image"
     commands:
       - "docker build --build-arg max_jobs=16 --tag {{ docker_image }} --target test --progress plain ."
