@@ -4,10 +4,9 @@
 
 steps:
   - label: ":docker: login"
-    commands: "docker push rocmshared/vllm-ci:{{ docker_image }}"
-      plugins:
-        - docker-login#v2.0.1:
-          username: rocmshared
+    plugins:
+      - docker-login#v2.0.1:
+        username: rocmshared
   - label: ":docker: build image"
     commands:
       - "docker build --build-arg max_jobs=16 --tag {{ docker_image }} --target test --progress plain ."
