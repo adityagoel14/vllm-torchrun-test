@@ -63,7 +63,7 @@ done
 
 echo "--- Pulling container" 
 
-image_name="rocmshared/vllm-ci:$BUILDKITE_COMMIT"
+image_name="rocmshared/vllm-ci:${BUILDKITE_COMMIT}"
 container_name="rocm_${BUILDKITE_COMMIT}_$(tr -dc A-Za-z0-9 < /dev/urandom | head -c 10; echo)"
 
 docker pull ${image_name}
