@@ -7,7 +7,6 @@ steps:
     - plugins:
       - docker-login#v3.0.0:
           username: rocmshared
-          password-env: $MY_DOCKER_LOGIN_PASSWORD
     - commands:
       - "docker build --build-arg max_jobs=16 --tag {{ docker_image }} --target test --progress plain ."
       - "docker push rocmshared/vllm-ci:{{ docker_image }}
