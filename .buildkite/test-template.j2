@@ -1,11 +1,16 @@
-{% set docker_image = "us-central1-docker.pkg.dev/vllm-405802/vllm-ci-test-repo/vllm-test:$BUILDKITE_COMMIT" %}
+{% set docker_image = "$BUILDKITE_COMMIT" %}
 {% set default_num_gpu = 1 %}
 {% set default_working_dir = "/vllm-workspace/tests" %}
 
 steps:
   - label: ":docker: build image"
+    plugins:
+      - docker-login#v3.0.0:
+          username: rocmshared
+          password-env: MY_DOCKER_LOGIN_PASSWORD
     commands:
       - "docker build --build-arg max_jobs=16 --tag {{ docker_image }} --target test --progress plain ."
+      - "docker push rocmshared/vllm-ci:{{ docker_image }}
     env:
       DOCKER_BUILDKIT: "1"
     retry:
