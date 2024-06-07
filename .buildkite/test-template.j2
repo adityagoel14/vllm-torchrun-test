@@ -4,6 +4,8 @@
 
 steps:
   - label: ":docker: build image"      
+    - commands:
+      - "echo 5"
     env:
       DOCKER_BUILDKIT: "1"
     retry:
@@ -13,7 +15,6 @@ steps:
         - exit_status: -10  # Agent was lost
           limit: 5
   - wait
-
   - group: "AMD Tests"
     depends_on: ~
     steps:
