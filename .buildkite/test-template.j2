@@ -3,16 +3,17 @@
 {% set default_working_dir = "/vllm-workspace/tests" %}
 
 steps:
-  - label: ":docker: build image"
-    - plugins:
+  - label: ":docker: login"
+    plugins:
       - docker-login#v3.0.0:
           username: rocmshared
+  - label: ":docker: build image"
     - commands:
       - "docker build --build-arg max_jobs=16 --tag {{ docker_image }} --target test --progress plain ."
       - "docker push rocmshared/vllm-ci:{{ docker_image }}
     env:
       DOCKER_BUILDKIT: "1"
-    retry:
+    retr 
       automatic:
         - exit_status: -1  # Agent was lost
           limit: 5
