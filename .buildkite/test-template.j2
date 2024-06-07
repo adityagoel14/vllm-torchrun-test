@@ -6,7 +6,8 @@
 steps:
   - group: "AMD Tests"
     steps:
-      - label: ":docker: build amd image"
+      - label: ":docker: build image"
+        key: "amd build"
         commands:
           - "docker build --build-arg max_jobs=16 --tag {{ docker_image_amd }} --target test --progress plain ."
           - "docker push {{ docker_image_amd }}"
@@ -31,7 +32,7 @@ steps:
         env:
           DOCKER_BUILDKIT: "1"
         depends_on:
-          - step: ":docker: build amd image"
+          - "amd build"
         soft_fail: true
     {% endif %}
     {% endfor %}
