@@ -66,7 +66,16 @@ echo "--- Pulling container"
 image_name="rocmshared/vllm-ci:${BUILDKITE_COMMIT}"
 container_name="rocm_${BUILDKITE_COMMIT}_$(tr -dc A-Za-z0-9 < /dev/urandom | head -c 10; echo)"
 
+start_time=$(date +%s)
+
 docker pull ${image_name}
+
+# End timer and calculate duration
+end_time=$(date +%s)
+duration=$((end_time - start_time))
+
+# Log the duration to a separate log file with timestamp
+echo "$(date +"%Y-%m-%d %H:%M:%S") - Duration of Docker pull: ${duration} seconds" >> /docker_pull_log.txt
 
 remove_docker_container() {
    docker rm -f ${container_name} || docker image rm -f ${image_name} || true
