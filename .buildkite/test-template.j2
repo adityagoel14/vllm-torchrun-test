@@ -25,6 +25,7 @@ steps:
         plugins:
           - docker-login#v2.0.1:
               username: rocmshared
+        key: "amd-push"
         env:
           DOCKER_BUILDKIT: "1"
         depends_on:
@@ -33,7 +34,7 @@ steps:
     {% if step.mirror_hardwares and "amd" in step.mirror_hardwares %}
       - label: "AMD: {{ step.label }}"
         depends_on:
-          - "amd-build"
+          - "amd-push"
         agents:
           queue: amd
         command: bash .buildkite/run-amd-test.sh "cd {{ (step.working_dir or default_working_dir) | safe  }} ; {{ step.command  or (step.commands | join(" ; ")) | safe }}"
