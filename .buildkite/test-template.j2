@@ -34,7 +34,7 @@ steps:
         plugins:
           - docker-login#v3.0.0:
               username: rocmshared
-        concurrency: 1
+        concurrency: 2
         concurrency_group: "{$BUILDKITE_COMMIT}"
         env:
           DOCKER_BUILDKIT: "1"
