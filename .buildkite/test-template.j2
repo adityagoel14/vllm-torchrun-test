@@ -31,6 +31,9 @@ steps:
         agents:
           queue: amd
         command: bash .buildkite/run-amd-test.sh "cd {{ (step.working_dir or default_working_dir) | safe  }} ; {{ step.command  or (step.commands | join(" ; ")) | safe }}"
+        plugins:
+          - docker-login#v3.0.0:
+              username: rocmshared
         concurrency: 1
         concurrency_group: "{$BUILDKITE_COMMIT}"
         env:
