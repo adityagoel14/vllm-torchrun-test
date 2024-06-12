@@ -63,7 +63,8 @@ if [ -z "${HF_TOKEN}" ]; then
     echo "HF_TOKEN is not set"
 else
     echo "HF_TOKEN is set"
-    
+fi
+
 echo "--- Running container"
 
 docker run \
