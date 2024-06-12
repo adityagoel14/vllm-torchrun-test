@@ -57,6 +57,13 @@ remove_docker_container() {
 }
 trap remove_docker_container EXIT
 
+echo "--- Verifying HF_TOKEN" 
+
+if [ -z "${HF_TOKEN}" ]; then
+    echo "HF_TOKEN is not set"
+else
+    echo "HF_TOKEN is set"
+    
 echo "--- Running container"
 
 docker run \
