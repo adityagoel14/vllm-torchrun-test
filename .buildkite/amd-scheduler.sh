@@ -50,7 +50,7 @@ while true; do
     job_id=$(echo "$job" | jq -r '.id')
     job_gpus=$(echo "$job" | jq -r '.priority.number')
 
-    f ! python3 gpu_scheduler.py check $job_gpus; then
+    if ! python3 gpu_scheduler.py check $job_gpus; then
         echo "Waiting for $job_gpus GPUs to become available..."
         while ! python3 gpu_scheduler.py check $job_gpus; do
             sleep 10
