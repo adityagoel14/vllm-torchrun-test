@@ -71,7 +71,7 @@ docker run \
         --device /dev/kfd --device /dev/dri \
         --network host \
         --rm \
-        -e HF_TOKEN \
+        -e HF_TOKEN, HIP_VISIBLE_DEVICES \
         --name ${container_name} \
         ${image_name} \
         /bin/bash -c "${@}"
