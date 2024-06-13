@@ -35,7 +35,7 @@ while true; do
     -H "Authorization: Bearer bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77" \
     -H "Content-Type: application/json" \
     -d '{
-        "query": "{ build(slug: \"amd-11/torchrun-test-final/91\") { jobs(first: 1, state: SCHEDULED) { edges { node { ... on JobTypeCommand { id label priority { number } } } } } } }",
+        "query": "{ build(slug: \"amd-11/torchrun-test-final/${BUILDKITE_BUILD_NUMBER}\") { jobs(first: 2, state: SCHEDULED) { edges { node { ... on JobTypeCommand { id label priority { number } } } } } } }",
         "variables": "{ }"
     }' | jq -r '.data.build.jobs.edges[] | .node')
 
@@ -49,7 +49,7 @@ while true; do
     job_label=$(echo "$job" | jq -r '.label')
     job_id=$(echo "$job" | jq -r '.id')
     job_gpus=$(echo "$job" | jq -r '.priority.number')
-
+    echo "Job: ${job_label}"
     if ! python3 gpu_scheduler.py check $job_gpus; then
         echo "Waiting for $job_gpus GPUs to become available..."
         while ! python3 gpu_scheduler.py check $job_gpus; do
@@ -57,7 +57,7 @@ while true; do
         done
     fi
 
-    execute_test $job_id $job_gpus
+    execute_test $job_id $job_gpus 
     sleep 10
 
 done
