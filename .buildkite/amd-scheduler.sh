@@ -35,7 +35,7 @@ while true; do
     -H "Authorization: Bearer bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77" \
     -H "Content-Type: application/json" \
     -d '{
-        "query": "{ build(slug: \"amd-11/torchrun-test-final/${BUILDKITE_BUILD_NUMBER}\") { jobs(first: 2, state: SCHEDULED) { edges { node { ... on JobTypeCommand { id label priority { number } } } } } } }",
+        "query": "{ build(slug: \"amd-11/torchrun-test-final/95\") { jobs(first: 2, state: CANCELLED) { edges { node { ... on JobTypeCommand { id label priority { number } } } } } } }",
         "variables": "{ }"
     }' | jq -r '.data.build.jobs.edges[] | .node')
 
