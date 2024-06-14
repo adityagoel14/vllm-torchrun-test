@@ -67,6 +67,12 @@ fi
 
 echo "--- Running container"
 
+if [ -z "${HIP_VISIBLE_DEVICES}" ]; then
+    echo "HIP_VISIBLE_DEVICES is not set."
+else
+    echo "HIP_VISIBLE_DEVICES is set to: ${HIP_VISIBLE_DEVICES}"
+fi
+
 docker run \
         --device /dev/kfd --device /dev/dri \
         --network host \

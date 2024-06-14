@@ -12,8 +12,7 @@ function execute_test {
     # fi
 
     echo "Adding env variable HIP_VISIBLE_DEVICES=${gpu_list}"
-    HIP_VISIBLE_DEVICES="${gpu_list}" buildkite-agent start --acquire-job=$id --enable-environment-variable-allowlist --allowed-environment-variables="HIP_VISIBLE_DEVICES"
-    AGENT_PID=$!
+    HIP_VISIBLE_DEVICES="${gpu_list}" buildkite-agent start --acquire-job=$id
     wait $AGENT_PID
 
     python3 .buildkite/amd-gpu-scheduler.py release "$gpu_list"
