@@ -57,7 +57,11 @@ def main():
         release_gpus(gpu_ids)
     elif action == "check":
         required_gpus = int(sys.argv[2])
-        print(check_available_gpus(required_gpus))
+        available = check_available_gpus(required_gpus)
+        if available:
+            sys.exit(0)  
+        else:
+            sys.exit(1)
 
 if __name__ == "__main__":
     main()
