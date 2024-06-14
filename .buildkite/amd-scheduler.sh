@@ -11,7 +11,8 @@ function execute_test {
     #   return 0
     # fi
     
-    buildkite-agent start --acquire-job=$id --allowed-environment-variables="HIP_VISIBLE_DEVICES=${gpu_list}"
+    echo "Adding env variable HIP_VISIBLE_DEVICES=${gpu_list}"
+    HIP_LIMITED_DEVICES=$gpu_list buildkite-agent start --acquire-job=$id --enable-environment-variable-allowlist --allowed-environment-variables="HIP_VISIBLE_DEVICES"
     AGENT_PID=$!
 
     wait $AGENT_PID
@@ -58,7 +59,7 @@ while true; do
         done
     fi
 
-    execute_test $job_id $job_gpus 
-    sleep 10
+    execute_test $job_id $job_gpus &
+    sleep 10 
 
 done
