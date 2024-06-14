@@ -13,7 +13,7 @@ steps:
         depends_on: ~
         plugins:
           - docker-login#v3.0.0:
-              username: rocmshared
+              username: alexei.ivanov@amd.com
         agents: 
           queue: amd
         key: "amd-build"
@@ -33,7 +33,7 @@ steps:
           - "amd-build"
         plugins:
           - docker-login#v3.0.0:
-              username: rocmshared
+              username: alexei.ivanov@amd.com
         agents: 
           queue: amd
         concurrency: 3
