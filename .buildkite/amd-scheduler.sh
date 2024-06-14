@@ -49,7 +49,7 @@ while true; do
     job_label=$(echo "$job" | jq -r '.label')
     job_id=$(echo "$job" | jq -r '.id')
     job_gpus=$(echo "$job" | jq -r '.priority.number')
-    echo "Job: ${job_label}"
+    echo -e "Job: ${job_label}\nID: ${job_id}\nGPUs: ${job_gpus}"
     if ! python3 .buildkite/amd-gpu-scheduler.py check $job_gpus; then
         echo "Waiting for $job_gpus GPUs to become available..."
         while ! python3 .buildkite/amd-gpu-scheduler.py check $job_gpus; do
