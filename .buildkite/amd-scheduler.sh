@@ -4,15 +4,16 @@ function execute_test {
     id=$1
     gpus=$2
 
-    gpu_list=$(python3 .buildkite/amd-gpu-scheduler.py assign $gpus | jq -r '. | @csv' | tr -d '"')
+    gpu_list=$(python3 .buildkite/amd-gpu-scheduler.py assign $gpus) 
+    formatted_gpu_list=$(echo "$gpu_list" | jq -r '. | @csv' | tr -d '"')
 
     # if [ -z "$gpu_list" ]; then
     #   echo "Not enough GPUs available."
     #   return 0
     # fi
 
-    echo "Adding env variable HIP_VISIBLE_DEVICES=${gpu_list}"
-    HIP_VISIBLE_DEVICES="${gpu_list}" buildkite-agent start --acquire-job=$id
+    echo "Adding env variable HIP_VISIBLE_DEVICES=${formatted_gpu_list}"
+    HIP_VISIBLE_DEVICES="${formatted_gpu_list}" buildkite-agent start --acquire-job=$id
     wait $AGENT_PID
 
     python3 .buildkite/amd-gpu-scheduler.py release "$gpu_list"
