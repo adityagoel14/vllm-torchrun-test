@@ -16,7 +16,7 @@ function execute_test {
 
     wait $AGENT_PID
 
-    python3 gpu_scheduler.py release "$gpu_list"
+    python3 amd-gpu-scheduler.py release "$gpu_list"
     echo "GPUs released: $GPU_IDS"
 }
 
