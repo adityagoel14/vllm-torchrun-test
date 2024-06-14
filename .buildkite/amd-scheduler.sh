@@ -12,9 +12,8 @@ function execute_test {
     # fi
     
     echo "Adding env variable HIP_VISIBLE_DEVICES=${gpu_list}"
-    HIP_VISIBLE_DEVICES=$gpu_list buildkite-agent start --acquire-job=$id --enable-environment-variable-allowlist --allowed-environment-variables="HIP_VISIBLE_DEVICES"
+    HIP_LIMITED_DEVICES=$gpu_list buildkite-agent start --acquire-job=$id --enable-environment-variable-allowlist --allowed-environment-variables="HIP_VISIBLE_DEVICES"
     AGENT_PID=$!
-
     wait $AGENT_PID
 
     python3 .buildkite/amd-gpu-scheduler.py release "$gpu_list"
@@ -37,7 +36,7 @@ while true; do
     -H "Authorization: Bearer bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77" \
     -H "Content-Type: application/json" \
     -d '{
-        "query": "{ build(slug: \"amd-11/torchrun-test-final/'"${BUILDKITE_BUILD_NUMBER}"'\") { jobs(first: 1, state: SCHEDULED) { edges { node { ... on JobTypeCommand { id label priority { number } } } } } } }",
+        "query": "{ build(slug: \"amd-11/torchrun-test-final/'"${BUILDKITE_BUILD_NUMBER}"'\") { jobs(first: 1, state: SCHEDULED) { edges { node { ... on JobTypeCommand { uuid label priority { number } } } } } } }",
         "variables": "{ }"
     }' | jq -r '.data.build.jobs.edges[] | .node')
 
