@@ -21,7 +21,7 @@ steps:
           DOCKER_BUILDKIT: "1"
         retry:
           automatic:
-           - exit_status: -1  # Agent was lost
+            - exit_status: -1  # Agent was lost
               limit: 5
             - exit_status: -10  # Agent was lost
               limit: 5
