@@ -48,7 +48,7 @@ while true; do
 
     # Scheduling job
     job_label=$(echo "$job" | jq -r '.label')
-    job_id=$(echo "$job" | jq -r '.id')
+    job_id=$(echo "$job" | jq -r '.uuid')
     job_gpus=$(echo "$job" | jq -r '.priority.number')
 
     echo -e "Job: ${job_label}\nID: ${job_id}\nGPUs: ${job_gpus}"
