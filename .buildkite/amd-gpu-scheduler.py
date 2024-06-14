@@ -42,7 +42,7 @@ def release_gpus(gpu_ids):
         save_state(state)
 
 def check_available_gpus(required_gpus):
-    with FileLeak(lock_path):
+    with FileLock(lock_path):
         state = load_state()
         return len(state["available_gpus"]) >= required_gpus
 
