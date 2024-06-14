@@ -13,31 +13,35 @@ steps:
         plugins:
           - docker-login#v3.0.0:
               username: rocmshared
+        agents:
+          queue: amd
+        depends_on: ~
         key: "amd-build"
         env:
           DOCKER_BUILDKIT: "1"
         retry:
           automatic:
-            - exit_status: -1  # Agent was lost
+           - exit_status: -1  # Agent was lost
               limit: 5
             - exit_status: -10  # Agent was lost
               limit: 5
-        depends_on: ~
     {% for step in steps %}
     {% if step.mirror_hardwares and "amd" in step.mirror_hardwares %}
       - label: "AMD: {{ step.label }}"
-        depends_on:
-          - "amd-build"
-        agents:
-          queue: amd
         command: bash .buildkite/run-amd-test.sh "cd {{ (step.working_dir or default_working_dir) | safe  }} ; {{ step.command  or (step.commands | join(" ; ")) | safe }}"
         plugins:
           - docker-login#v3.0.0:
               username: rocmshared
-        concurrency: 2
+        agents:
+          queue: amd
+        depends_on:
+          - "amd-build"
+        concurrency: 3
         concurrency_group: "{$BUILDKITE_COMMIT}"
         env:
           DOCKER_BUILDKIT: "1"
         soft_fail: true
     {% endif %}
     {% endfor %}
+  
+  
