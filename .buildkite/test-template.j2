@@ -35,6 +35,7 @@ steps:
           - "amd-build"
       - label: "Scheduler 2"
         commands:
+          - sleep 10
           - bash .buildkite/amd-scheduler.sh
         priority: 10
         agents:

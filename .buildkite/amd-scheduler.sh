@@ -1,14 +1,15 @@
 #!/bin/bash
 
 function execute_test {
-    id=$1
-    gpus=$2
+    label=$1
+    id=$2
+    gpus=$3
 
     gpu_list=$(python3 .buildkite/amd-gpu-scheduler.py assign $gpus) 
     # Remove [] for env variable
     formatted_gpu_list=$(echo "$gpu_list" | jq -r '. | @csv' | tr -d '"')
 
-    echo "Adding env variable HIP_VISIBLE_DEVICES=${formatted_gpu_list}"
+    echo "Running ${label} - Allocating GPUs: ${formatted_gpu_list}"
 
     # TO DO: don't redirect errors 
 
@@ -17,7 +18,8 @@ function execute_test {
     
     # After agents terminates free the GPUs it was using
     python3 .buildkite/amd-gpu-scheduler.py release "$gpu_list"
-    echo "GPUs released: $gpu_list"
+
+    echo "Finishing ${label} - Releasing GPUs: $formatted_gpu_list"
 }
 
 cleanup() {
@@ -36,7 +38,7 @@ pip install FileLock
 
 echo "--- Fetching Jobs" 
 
-jobs=$(curl https://graphql.buildkite.com/v1 \
+jobs=$(curl -s -S https://graphql.buildkite.com/v1 \
     -H "Authorization: Bearer bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77" \
     -H "Content-Type: application/json" \
     -d '{
@@ -54,16 +56,16 @@ for job in "${jobs_array[@]}"; do
     job_id=$(echo "$job" | jq -r '.uuid')
     job_gpus=$(echo "$job" | jq -r '.priority.number')
 
-    echo -e "Job -> ${job_label}\nID -> ${job_id}\nGPUs -> ${job_gpus}"
+    #echo -e "Job -> ${job_label}\nID -> ${job_id}\nGPUs -> ${job_gpus}"
 
     # Check if priority is higher than 8 (GPUs on the machine)
-    if [ "$job_gpus" -gt 8 ]; then
-        echo "Skipping job requiring more than 8 GPUs -> $job_label"
+    if [ "$job_gpus" -lt 1 ] || "$job_gpus" -gt 8 ]; then
+        echo "Skipping ${job_label} - Invalid # of GPUs (${job_gpus})"
         continue
     fi
 
     # Check if job has been taken by a different agent
-    job_state=$(curl https://graphql.buildkite.com/v1 \
+    job_state=$(curl -s -S https://graphql.buildkite.com/v1 \
         -H "Authorization: Bearer bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77" \
         -H "Content-Type: application/json" \
         -d '{
@@ -71,10 +73,8 @@ for job in "${jobs_array[@]}"; do
             "variables": "{ }"
         }' | jq -r '.data.job.state')
     
-    echo "${job_state}"
-
     if [ "$job_state" != "SCHEDULED" ]; then
-        echo "Skipping job as already taken by another agent-> $job_label"
+        echo "Skipping ${job_label} - Already running"
         continue
     fi
 
@@ -87,7 +87,7 @@ for job in "${jobs_array[@]}"; do
     fi
 
     # Run test
-    execute_test $job_id $job_gpus &
+    execute_test $job_label $job_id $job_gpus &
     sleep 10 
 
 done
