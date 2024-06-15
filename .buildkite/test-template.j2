@@ -33,7 +33,7 @@ steps:
           queue: amd
         depends_on:
           - "amd-build"
-      loop: {{ list(range(2)) }}
+      loop: {{ [0, 1] }}
 
     {% for step in steps %}
     {% if step.mirror_hardwares and "amd" in step.mirror_hardwares %}
