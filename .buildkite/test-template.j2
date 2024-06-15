@@ -33,7 +33,7 @@ steps:
           queue: amd
         depends_on:
           - "amd-build"
-       - label: "Scheduler 2"
+      - label: "Scheduler 2"
         commands:
           - bash .buildkite/amd-scheduler.sh
         priority: 10
