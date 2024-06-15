@@ -33,9 +33,25 @@ cleanup_docker() {
 # Call the cleanup docker function
 cleanup_docker
 
+echo "--- Checking for HIP_VISIBLE_DEVICES"
+
+if [ -z "${HIP_VISIBLE_DEVICES}" ]; then
+    echo "HIP_VISIBLE_DEVICES is not set."
+else
+    echo "HIP_VISIBLE_DEVICES is set to: ${HIP_VISIBLE_DEVICES}"
+fi
+
 echo "--- Resetting GPUs"
 
-echo "reset" > /opt/amdgpu/etc/gpu_state
+#echo "reset" > /opt/amdgpu/etc/gpu_state
+
+IFS=',' read -ra GPU_IDS <<< "$HIP_VISIBLE_DEVICES"
+# Loop through each GPU ID specified in the environment variable
+for i in "${GPU_IDS[@]}"; do
+    # Reset each specified GPU
+    rocm-smi --gpureset -d $i
+    echo "Reset GPU ID $i"
+done
 
 while true; do
         sleep 3
@@ -66,12 +82,6 @@ else
 fi
 
 echo "--- Running container"
-
-if [ -z "${HIP_VISIBLE_DEVICES}" ]; then
-    echo "HIP_VISIBLE_DEVICES is not set."
-else
-    echo "HIP_VISIBLE_DEVICES is set to: ${HIP_VISIBLE_DEVICES}"
-fi
 
 docker run \
         --device /dev/kfd --device /dev/dri \
