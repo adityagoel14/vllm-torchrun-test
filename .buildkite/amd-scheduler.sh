@@ -59,15 +59,13 @@ jobs=$(curl https://graphql.buildkite.com/v1 \
     -d '{
         "query": "{ build(slug: \"amd-11/torchrun-test-final/'"${BUILDKITE_BUILD_NUMBER}"'\") { jobs(first: 100, state: SCHEDULED) { edges { node { ... on JobTypeCommand { uuid label priority { number } } } } } } }",
         "variables": "{ }"
-    }' | jq -r '.data.build.jobs.edges | sort_by(.node.priority.number)[] | .node')
+    }' | jq -r '.data.build.jobs.edges | sort_by(.node.priority.number | -.)[] | .node')
 
 # Convert into bash array
-jobs_array=($(echo "$jobs" | jq -s '.'))
+mapfile -t jobs_array < <(echo "$jobs" | jq -c '.data.build.jobs.edges | map(.node) | sort_by(.priority.number) | reverse[]')
 
 # Iterate through each job
-for job_json in "${jobs_array[@]}"; do
-
-    job=$(echo "$job_json" | jq '.')
+for job in "${jobs_array[@]}"; do
 
     job_label=$(echo "$job" | jq -r '.label')
     job_id=$(echo "$job" | jq -r '.uuid')
