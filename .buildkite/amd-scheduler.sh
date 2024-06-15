@@ -13,7 +13,7 @@ function execute_test {
     # fi
 
     echo "Adding env variable HIP_VISIBLE_DEVICES=${formatted_gpu_list}"
-    HIP_VISIBLE_DEVICES="${formatted_gpu_list}" buildkite-agent start --acquire-job=$id
+    HIP_VISIBLE_DEVICES="${formatted_gpu_list}" buildkite-agent start --acquire-job=$id > /dev/null 2>&1
     wait $AGENT_PID
 
     python3 .buildkite/amd-gpu-scheduler.py release "$gpu_list"
@@ -40,7 +40,7 @@ while true; do
         "variables": "{ }"
     }' | jq -r '.data.build.jobs.edges[] | .node')
 
-    # Check if the response is empty
+    # Check if there are no more jobs in the queue
     if [ -z "$job" ]; then
         echo "No more Available Jobs" 
         exit 0
@@ -51,7 +51,13 @@ while true; do
     job_id=$(echo "$job" | jq -r '.uuid')
     job_gpus=$(echo "$job" | jq -r '.priority.number')
 
-    echo -e "Job: ${job_label}\nID: ${job_id}\nGPUs: ${job_gpus}"
+    echo -e "Job -> ${job_label}\nID -> ${job_id}\nGPUs -> ${job_gpus}"
+
+    # Check if priority is higher than 8 (GPUs on the machine)
+    if [ "$job_gpus" -gt 8 ]; then
+        echo "Skipping job requiring more than 8 GPUs -> $job_label"
+        continue
+    fi
 
     if ! python3 .buildkite/amd-gpu-scheduler.py check $job_gpus; then
         echo "Waiting for $job_gpus GPUs to become available..."

@@ -29,7 +29,6 @@ steps:
         commands:
           - bash .buildkite/amd-scheduler.sh
         priority: 10
-        parallelism: 2
         agents:
           queue: amd
         depends_on:
