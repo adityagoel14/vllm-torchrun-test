@@ -20,23 +20,6 @@ function execute_test {
     echo "GPUs released: $gpu_list"
 }
 
-function is_job_still_scheduled {
-    id=$1
-    job_state=$(curl https://graphql.buildkite.com/v1 \
-        -H "Authorization: Bearer bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77" \
-        -H "Content-Type: application/json" \
-        -d '{
-            "query": "{ job(uuid: \"'"$id"'\") { ... on JobTypeCommand { state } } }",
-            "variables": "{ }"
-        }' | jq -r '.data.job.state')
-
-    if [ "$job_state" == "SCHEDULED" ]; then
-        return 0  
-    else
-        return 1  
-    fi
-}
-
 cleanup() {
     echo "Cleaning up GPU state file..."
     rm -f /tmp/gpu_state.json
@@ -80,8 +63,18 @@ for job in "${jobs_array[@]}"; do
     fi
 
     # Check if job has been taken by a different agent
-    if ! is_job_still_scheduled $job_id; then
-        echo "Skipping job as it is no longer scheduled -> $job_label"
+    job_state=$(curl https://graphql.buildkite.com/v1 \
+        -H "Authorization: Bearer bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "query": "{ job(uuid: \"'"$job_id"'\") { ... on JobTypeCommand { state } } }",
+            "variables": "{ }"
+        }' | jq -r '.data.job.state')
+    
+    echo "${job_state}"
+
+    if [ "$job_state" != "SCHEDULED" ]; then
+        echo "Skipping job as already taken by another agent-> $job_label"
         continue
     fi
 
