@@ -14,7 +14,7 @@ function execute_test {
     # TO DO: don't redirect errors 
 
     # Start a new Buildkite agent and pass in env variable to subprocess
-    HIP_VISIBLE_DEVICES="${formatted_gpu_list}" buildkite-agent start --acquire-job=$id > /dev/null 2>&1
+    HIP_VISIBLE_DEVICES="${formatted_gpu_list}" buildkite-agent start --acquire-job=$id > /dev/null #2>&1
     
     # After agents terminates free the GPUs it was using
     python3 .buildkite/amd-gpu-scheduler.py release "$gpu_list"
@@ -35,6 +35,7 @@ echo "--- Checking Dependences"
 
 sudo apt-get install jq
 pip install FileLock
+sleep 30 
 
 echo "--- Fetching Jobs" 
 
@@ -88,6 +89,6 @@ for job in "${jobs_array[@]}"; do
 
     # Run test
     execute_test "$job_label" $job_id $job_gpus &
-    sleep 10 
+    sleep 30 
 
 done
