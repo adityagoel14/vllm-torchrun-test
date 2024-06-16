@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function execute_test {
-    label=$1
+    label="$1"
     id=$2
     gpus=$3
 
@@ -59,7 +59,7 @@ for job in "${jobs_array[@]}"; do
     #echo -e "Job -> ${job_label}\nID -> ${job_id}\nGPUs -> ${job_gpus}"
 
     # Check if priority is higher than 8 (GPUs on the machine)
-    if [ "$job_gpus" -lt 1 ] || "$job_gpus" -gt 8 ]; then
+    if [ "$job_gpus" -lt 1 ] || [ "$job_gpus" -gt 8 ]; then
         echo "Skipping ${job_label} - Invalid # of GPUs (${job_gpus})"
         continue
     fi
@@ -87,7 +87,7 @@ for job in "${jobs_array[@]}"; do
     fi
 
     # Run test
-    execute_test $job_label $job_id $job_gpus &
+    execute_test "$job_label" $job_id $job_gpus &
     sleep 10 
 
 done
