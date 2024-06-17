@@ -43,7 +43,7 @@ jobs=$(curl -s -S https://graphql.buildkite.com/v1 \
     -H "Authorization: Bearer bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77" \
     -H "Content-Type: application/json" \
     -d '{
-        "query": "{ build(slug: \"amd-11/torchrun-test-final/'"${BUILDKITE_BUILD_NUMBER}"'\") { jobs(first: 100, state: WAITING) { edges { node { ... on JobTypeCommand { uuid label priority { number } } } } } } }",
+        "query": "{ build(slug: \"amd-11/torchrun-test-final/'"${BUILDKITE_BUILD_NUMBER}"'\") { jobs(first: 100, state: SCHEDULED) { edges { node { ... on JobTypeCommand { uuid label priority { number } } } } } } }",
         "variables": "{ }"
     }')
 
@@ -74,7 +74,7 @@ for job in "${jobs_array[@]}"; do
             "variables": "{ }"
         }' | jq -r '.data.job.state')
     
-    if [ "$job_state" != "WAITING" ]; then
+    if [ "$job_state" != "SCHEDULED" ]; then
         echo "Skipping ${job_label} - Already running"
         continue
     fi
