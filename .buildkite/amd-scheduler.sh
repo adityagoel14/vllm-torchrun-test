@@ -14,7 +14,7 @@ function execute_test {
     # TO DO: don't redirect errors 
 
     # Start a new Buildkite agent and pass in env variable to subprocess
-    HIP_VISIBLE_DEVICES="${formatted_gpu_list}" buildkite-agent start --acquire-job=$id > /dev/null #2>&1
+    HIP_VISIBLE_DEVICES="${formatted_gpu_list}" buildkite-agent start --acquire-job=$id #--queue amd-test > /dev/null #2>&1
     
     # After agents terminates free the GPUs it was using
     python3 .buildkite/amd-gpu-scheduler.py release "$gpu_list"
