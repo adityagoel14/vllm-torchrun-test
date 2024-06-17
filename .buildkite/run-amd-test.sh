@@ -53,14 +53,6 @@ for i in "${GPU_IDS[@]}"; do
     echo "Reset GPU ID $i"
 done
 
-while true; do
-        sleep 3
-        if grep -q clean /opt/amdgpu/etc/gpu_state; then
-                echo "GPUs state is \"clean\""
-                break
-        fi
-done
-
 echo "--- Pulling container" 
 
 image_name="rocmshared/vllm-ci:${BUILDKITE_COMMIT}"
