@@ -43,15 +43,15 @@ fi
 
 echo "--- Resetting GPUs"
 
-#echo "reset" > /opt/amdgpu/etc/gpu_state
+echo "reset" > /opt/amdgpu/etc/gpu_state
 
-IFS=',' read -ra GPU_IDS <<< "$HIP_VISIBLE_DEVICES"
-# Loop through each GPU ID specified in the environment variable
-for i in "${GPU_IDS[@]}"; do
-    # Reset each specified GPU
-    rocm-smi --gpureset -d $i
-    echo "Reset GPU ID $i"
-done
+# IFS=',' read -ra GPU_IDS <<< "$HIP_VISIBLE_DEVICES"
+# # Loop through each GPU ID specified in the environment variable
+# for i in "${GPU_IDS[@]}"; do
+#     # Reset each specified GPU
+#     rocm-smi --gpureset -d $i
+#     echo "Reset GPU ID $i"
+# done
 
 echo "--- Pulling container" 
 
