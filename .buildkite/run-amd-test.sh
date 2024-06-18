@@ -41,25 +41,25 @@ else
     echo "ROCR_VISIBLE_DEVICES is set to: ${ROCR_VISIBLE_DEVICES}"
 fi
 
-echo "--- Resetting GPUs"
+# echo "--- Resetting GPUs"
 
-echo "reset" > /opt/amdgpu/etc/gpu_state
+# echo "reset" > /opt/amdgpu/etc/gpu_state
 
-while true; do
-        sleep 3
-        if grep -q clean /opt/amdgpu/etc/gpu_state; then
-                echo "GPUs state is \"clean\""
-                break
-        fi
-done
-
-# IFS=',' read -ra GPU_IDS <<< "$ROCR_VISIBLE_DEVICES"
-# # Loop through each GPU ID specified in the environment variable
-# for i in "${GPU_IDS[@]}"; do
-#     # Reset each specified GPU
-#     rocm-smi --gpureset -d $i
-#     echo "Reset GPU ID $i"
+# while true; do
+#         sleep 3
+#         if grep -q clean /opt/amdgpu/etc/gpu_state; then
+#                 echo "GPUs state is \"clean\""
+#                 break
+#         fi
 # done
+
+IFS=',' read -ra GPU_IDS <<< "$ROCR_VISIBLE_DEVICES"
+# Loop through each GPU ID specified in the environment variable
+for i in "${GPU_IDS[@]}"; do
+    # Reset each specified GPU
+    rocm-smi --gpureset -d $i
+    echo "Reset GPU ID $i"
+done
 
 echo "--- Pulling container" 
 
