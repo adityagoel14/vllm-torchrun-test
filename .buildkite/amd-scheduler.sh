@@ -43,7 +43,7 @@ jobs=$(curl -s -S https://graphql.buildkite.com/v1 \
     -H "Authorization: Bearer bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77" \
     -H "Content-Type: application/json" \
     -d '{
-        "query": "{ build(slug: \"amd-11/torchrun-test-final/'"${BUILDKITE_BUILD_NUMBER}"'\") { jobs(first: 100, state: SCHEDULED, agentQueryRules: \"queue=amd-test\") { edges { node { ... on JobTypeCommand { uuid label priority { number } } } } } } }",
+        "query": "{ build(slug: \"amd-11/vllm-ci/'"${BUILDKITE_BUILD_NUMBER}"'\") { jobs(first: 100, state: SCHEDULED, agentQueryRules: \"queue=amd-test\") { edges { node { ... on JobTypeCommand { uuid label priority { number } } } } } } }",
         "variables": "{ }"
     }')
 
