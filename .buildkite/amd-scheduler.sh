@@ -67,7 +67,7 @@ for job in "${jobs_array[@]}"; do
 
     # Check if job has been taken by a different agent
     job_state=$(curl -s -S https://graphql.buildkite.com/v1 \
-        -H "Authorization: Bearer bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77" \
+        -H "Authorization: Bearer bkua_ee217736d08466b137e11a93e16a50111452e488" \
         -H "Content-Type: application/json" \
         -d '{
             "query": "{ job(uuid: \"'"$job_id"'\") { ... on JobTypeCommand { state } } }",
