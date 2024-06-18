@@ -38,7 +38,7 @@ steps:
     {% if step.mirror_hardwares and "amd" in step.mirror_hardwares %}
       - label: "AMD: {{ step.label }}"
         agents:
-          queue: amd
+          queue: amd-test
         command: bash .buildkite/run-amd-test.sh "cd {{ (step.working_dir or default_working_dir) | safe  }} ; {{ step.command  or (step.commands | join(" ; ")) | safe }}"
         depends_on:
           - "amd-build"
