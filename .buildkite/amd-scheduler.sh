@@ -38,12 +38,12 @@ pip install FileLock
 sleep 30 
 
 echo "--- Fetching Jobs" 
-
+#bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77
 jobs=$(curl -s -S https://graphql.buildkite.com/v1 \
-    -H "Authorization: Bearer bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77" \
+    -H "Authorization: Bearer bkua_ee217736d08466b137e11a93e16a50111452e488" \
     -H "Content-Type: application/json" \
     -d '{
-        "query": "{ build(slug: \"amd-11/vllm-ci/'"${BUILDKITE_BUILD_NUMBER}"'\") { jobs(first: 100, state: SCHEDULED, agentQueryRules: \"queue=amd-test\") { edges { node { ... on JobTypeCommand { uuid label priority { number } } } } } } }",
+        "query": "{ build(slug: \"amd-12/vllm-ci/'"${BUILDKITE_BUILD_NUMBER}"'\") { jobs(first: 100, state: SCHEDULED, agentQueryRules: \"queue=amd-test\") { edges { node { ... on JobTypeCommand { uuid label priority { number } } } } } } }",
         "variables": "{ }"
     }')
 
