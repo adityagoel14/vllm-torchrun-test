@@ -33,12 +33,12 @@ cleanup_docker() {
 # Call the cleanup docker function
 cleanup_docker
 
-echo "--- Checking for HIP_VISIBLE_DEVICES"
+echo "--- Checking for ROCR_VISIBLE_DEVICES"
 
-if [ -z "${HIP_VISIBLE_DEVICES}" ]; then
-    echo "HIP_VISIBLE_DEVICES is not set."
+if [ -z "${ROCR_VISIBLE_DEVICES}" ]; then
+    echo "ROCR_VISIBLE_DEVICES is not set."
 else
-    echo "HIP_VISIBLE_DEVICES is set to: ${HIP_VISIBLE_DEVICES}"
+    echo "ROCR_VISIBLE_DEVICES is set to: ${ROCR_VISIBLE_DEVICES}"
 fi
 
 # echo "--- Resetting GPUs"
@@ -53,7 +53,7 @@ fi
 #         fi
 # done
 
-# IFS=',' read -ra GPU_IDS <<< "$HIP_VISIBLE_DEVICES"
+# IFS=',' read -ra GPU_IDS <<< "$ROCR_VISIBLE_DEVICES"
 # # Loop through each GPU ID specified in the environment variable
 # for i in "${GPU_IDS[@]}"; do
 #     # Reset each specified GPU
@@ -88,7 +88,7 @@ docker run \
         --network host \
         --rm \
         -e HF_TOKEN \
-        -e HIP_VISIBLE_DEVICES \
+        -e ROCR_VISIBLE_DEVICES \
         --name ${container_name} \
         ${image_name} \
         /bin/bash -c "${@}"
