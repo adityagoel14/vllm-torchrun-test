@@ -31,6 +31,18 @@ cleanup() {
 
 trap cleanup EXIT
 
+echo "--- Resetting GPUs"
+
+echo "reset" > /opt/amdgpu/etc/gpu_state
+
+while true; do
+        sleep 3
+        if grep -q clean /opt/amdgpu/etc/gpu_state; then
+                echo "GPUs state is \"clean\""
+                break
+        fi
+done
+
 echo "--- Checking Dependences"
 
 sudo apt-get install jq

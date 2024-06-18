@@ -41,17 +41,17 @@ else
     echo "HIP_VISIBLE_DEVICES is set to: ${HIP_VISIBLE_DEVICES}"
 fi
 
-echo "--- Resetting GPUs"
+# echo "--- Resetting GPUs"
 
-echo "reset" > /opt/amdgpu/etc/gpu_state
+# echo "reset" > /opt/amdgpu/etc/gpu_state
 
-while true; do
-        sleep 3
-        if grep -q clean /opt/amdgpu/etc/gpu_state; then
-                echo "GPUs state is \"clean\""
-                break
-        fi
-done
+# while true; do
+#         sleep 3
+#         if grep -q clean /opt/amdgpu/etc/gpu_state; then
+#                 echo "GPUs state is \"clean\""
+#                 break
+#         fi
+# done
 
 # IFS=',' read -ra GPU_IDS <<< "$HIP_VISIBLE_DEVICES"
 # # Loop through each GPU ID specified in the environment variable
