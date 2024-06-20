@@ -8,9 +8,16 @@ gpu_state_path = "/tmp/gpu_state.json"
 gpu_id_path = "/tmp/gpu_ids.json"
 
 def load_gpu_ids():
-    with open(gpu_id_path, 'r') as file:
-        data = json.load(file)
-        return [info["Unique ID"].replace("0x", "GPU-") for info in data.values()]
+    try:
+        with open(gpu_id_path, 'r') as file:
+            data = json.load(file)
+            return [info["Unique ID"].replace("0x", "GPU-") for info in data.values()]
+    except FileNotFoundError:
+        print("GPU IDs file not found.")
+        return []
+    except json.JSONDecodeError:
+        print("Error decoding JSON from the file.")
+        return []
 
 def load_state():
     try:

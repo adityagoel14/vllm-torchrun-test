@@ -50,10 +50,9 @@ pip install FileLock
 sleep 30 
 
 echo "--- Fetching GPUs" 
-gpu_ids_json=$(rocm-smi --showuniqueid --json)
-echo "$gpu_ids_json"
-echo "$gpu_ids_json" > /tmp/gpu_ids.json
-# rocm-smi --showuniqueid --json > /tmp/gpu_ids.json
+
+rocm-smi --showuniqueid --json > /tmp/gpu_ids.json
+cat /tmp/gpu_ids.json
 
 echo "--- Fetching Jobs" 
 #bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77
