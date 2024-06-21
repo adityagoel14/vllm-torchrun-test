@@ -109,3 +109,7 @@ for job in "${jobs_array[@]}"; do
     sleep 30 
 
 done
+
+wait
+
+echo "All jobs are done."
