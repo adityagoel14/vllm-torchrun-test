@@ -18,17 +18,19 @@ def load_gpu_ids():
     except json.JSONDecodeError:
         print("Error decoding JSON from the file.")
         return []
-
+ 
 def load_state():
     try:
         with open(gpu_state_path, 'r') as file:
             return json.load(file)
     except FileNotFoundError:
         ids = load_gpu_ids()
+        ids_map = {item: index for index, item in enumerate(ids)}
         return {
             "total_gpus": 8,
             "available_gpus": ids,
-            "in_use_gpus": []
+            "in_use_gpus": [], 
+            "ids_map": ids_map
         }
 
 def save_state(state):
@@ -59,6 +61,12 @@ def check_available_gpus(required_gpus):
         state = load_state()
         return len(state["available_gpus"]) >= required_gpus
 
+def get_indexes(gpu_ids):
+    with FileLock(lock_path):
+        state = load_state()
+        indexes = [state["ids_map"].get(gpu_id) for gpu_id in gpu_ids]
+        return indexes
+
 def main():
     action = sys.argv[1]
     if action == "assign":
@@ -75,6 +83,10 @@ def main():
             sys.exit(0)  
         else:
             sys.exit(1)
+    elif action == "reset":
+        gpu_ids = json.loads(sys.argv[2])
+        indexes = get_indexes(gpu_ids)
+        print(json.dumps(indexes))
 
 if __name__ == "__main__":
     main()

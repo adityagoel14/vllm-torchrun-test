@@ -6,6 +6,15 @@ function execute_test {
     gpus=$3
 
     gpu_list=$(python3 .buildkite/amd-gpu-scheduler.py assign $gpus) 
+    index_list=$(python3 .buildkite/amd-gpu-scheduler.py reset "$gpu_list")
+
+    # Reset the appropriate GPUs
+
+    for i in $(echo "$index_list" | jq -r '.[]'); do
+        rocm-smi --gpureset -d $i
+        echo "Reset GPU ID $i"
+    done
+
     # Remove [] for env variable
     formatted_gpu_list=$(echo "$gpu_list" | jq -r '. | @csv' | tr -d '"')
 
@@ -31,17 +40,17 @@ cleanup() {
 
 trap cleanup EXIT
 
-echo "--- Resetting GPUs"
+# echo "--- Resetting GPUs"
 
-echo "reset" > /opt/amdgpu/etc/gpu_state
+# echo "reset" > /opt/amdgpu/etc/gpu_state
 
-while true; do
-        sleep 3
-        if grep -q clean /opt/amdgpu/etc/gpu_state; then
-                echo "GPUs state is \"clean\""
-                break
-        fi
-done
+# while true; do
+#         sleep 3
+#         if grep -q clean /opt/amdgpu/etc/gpu_state; then
+#                 echo "GPUs state is \"clean\""
+#                 break
+#         fi
+# done
 
 echo "--- Checking Dependences"
 
