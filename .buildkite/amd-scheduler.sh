@@ -6,24 +6,14 @@ function execute_test {
     gpus=$3
 
     gpu_list=$(python3 .buildkite/amd-gpu-scheduler.py assign $gpus) 
-    index_list=$(python3 .buildkite/amd-gpu-scheduler.py reset "$gpu_list")
-
-    # Reset the appropriate GPUs
-
-    for i in $(echo "$index_list" | jq -r '.[]'); do
-        rocm-smi --gpureset -d $i
-        echo "Reset GPU ID $i"
-    done
 
     # Remove [] for env variable
     formatted_gpu_list=$(echo "$gpu_list" | jq -r '. | @csv' | tr -d '"')
 
     echo "Running ${label} - Allocating GPUs: ${formatted_gpu_list}"
 
-    # TO DO: don't redirect errors 
-
     # Start a new Buildkite agent and pass in env variable to subprocess
-    ROCR_VISIBLE_DEVICES="${formatted_gpu_list}" buildkite-agent start --acquire-job=$id --queue amd-test #> /dev/null #2>&1
+    ROCR_VISIBLE_DEVICES="${formatted_gpu_list}" buildkite-agent start --acquire-job=$id --queue amd-test > /dev/null #2>&1
     
     # After agents terminates free the GPUs it was using
     python3 .buildkite/amd-gpu-scheduler.py release "$gpu_list"
@@ -32,39 +22,38 @@ function execute_test {
 }
 
 cleanup() {
-    echo "Cleaning up GPU state file..."
+    echo "Cleaning up state files..."
     rm -f /tmp/gpu_state.json
     rm -f /tmp/gpu_lock
+    rm -f /tmp/gpu_ids.json
     echo "Cleanup complete. Exiting."
 }
 
 trap cleanup EXIT
 
-# echo "--- Resetting GPUs"
+echo "--- Resetting GPUs"
 
-# echo "reset" > /opt/amdgpu/etc/gpu_state
+echo "reset" > /opt/amdgpu/etc/gpu_state
 
-# while true; do
-#         sleep 3
-#         if grep -q clean /opt/amdgpu/etc/gpu_state; then
-#                 echo "GPUs state is \"clean\""
-#                 break
-#         fi
-# done
+while true; do
+        sleep 3
+        if grep -q clean /opt/amdgpu/etc/gpu_state; then
+                echo "GPUs state is \"clean\""
+                break
+        fi
+done
+
+echo "--- Fetching GPUs" 
+
+rocm-smi --showuniqueid --json > /tmp/gpu_ids.json
 
 echo "--- Checking Dependences"
 
 sudo apt-get install jq
 pip install FileLock
-sleep 30 
-
-echo "--- Fetching GPUs" 
-
-rocm-smi --showuniqueid --json > /tmp/gpu_ids.json
-cat /tmp/gpu_ids.json
 
 echo "--- Fetching Jobs" 
-#bkua_8b379ac0f6a511cc7715bbd48b02c938a6c26e77
+
 jobs=$(curl -s -S https://graphql.buildkite.com/v1 \
     -H "Authorization: Bearer bkua_ee217736d08466b137e11a93e16a50111452e488" \
     -H "Content-Type: application/json" \
@@ -83,9 +72,8 @@ for job in "${jobs_array[@]}"; do
     job_id=$(echo "$job" | jq -r '.uuid')
     job_gpus=$(echo "$job" | jq -r '.priority.number')
 
-    #echo -e "Job -> ${job_label}\nID -> ${job_id}\nGPUs -> ${job_gpus}"
 
-    # Check if priority is higher than 8 (GPUs on the machine)
+    # Check if priority is higher than 8 (GPUs on the machine) or less than 1
     if [ "$job_gpus" -lt 1 ] || [ "$job_gpus" -gt 8 ]; then
         echo "Skipping ${job_label} - Invalid # of GPUs (${job_gpus})"
         continue
