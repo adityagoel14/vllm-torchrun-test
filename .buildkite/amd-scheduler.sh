@@ -55,7 +55,7 @@ pip install FileLock
 echo "--- Fetching Jobs" 
 
 jobs=$(curl -s -S https://graphql.buildkite.com/v1 \
-    -H "Authorization: Bearer ${BUIDLKITE_API_KEY}" \
+    -H "Authorization: Bearer ${BUILDKITE_API_KEY}" \
     -H "Content-Type: application/json" \
     -d '{
         "query": "{ build(slug: \"amd-13/test/'"${BUILDKITE_BUILD_NUMBER}"'\") { jobs(first: 100, state: SCHEDULED, agentQueryRules: \"queue=amd-test\") { edges { node { ... on JobTypeCommand { uuid label priority { number } } } } } } }",
