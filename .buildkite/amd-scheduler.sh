@@ -55,10 +55,10 @@ pip install FileLock
 echo "--- Fetching Jobs" 
 
 jobs=$(curl -s -S https://graphql.buildkite.com/v1 \
-    -H "Authorization: Bearer bkua_ee217736d08466b137e11a93e16a50111452e488" \
+    -H "Authorization: Bearer ${BUIDLKITE_API_KEY}" \
     -H "Content-Type: application/json" \
     -d '{
-        "query": "{ build(slug: \"amd-12/vllm-ci/'"${BUILDKITE_BUILD_NUMBER}"'\") { jobs(first: 100, state: SCHEDULED, agentQueryRules: \"queue=amd-test\") { edges { node { ... on JobTypeCommand { uuid label priority { number } } } } } } }",
+        "query": "{ build(slug: \"amd-13/test/'"${BUILDKITE_BUILD_NUMBER}"'\") { jobs(first: 100, state: SCHEDULED, agentQueryRules: \"queue=amd-test\") { edges { node { ... on JobTypeCommand { uuid label priority { number } } } } } } }",
         "variables": "{ }"
     }')
 
@@ -81,7 +81,7 @@ for job in "${jobs_array[@]}"; do
 
     # Check if job has been taken by a different agent
     job_state=$(curl -s -S https://graphql.buildkite.com/v1 \
-        -H "Authorization: Bearer bkua_ee217736d08466b137e11a93e16a50111452e488" \
+        -H "Authorization: Bearer ${BUILDKITE_API_KEY}" \
         -H "Content-Type: application/json" \
         -d '{
             "query": "{ job(uuid: \"'"$job_id"'\") { ... on JobTypeCommand { state } } }",
