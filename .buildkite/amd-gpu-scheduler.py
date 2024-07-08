@@ -5,32 +5,32 @@ from filelock import FileLock
 
 lock_path = "/tmp/gpu_lock"
 gpu_state_path = "/tmp/gpu_state.json"
-gpu_id_path = "/tmp/gpu_ids.json"
+# gpu_id_path = "/tmp/gpu_ids.json"
 
-def load_gpu_ids():
-    try:
-        with open(gpu_id_path, 'r') as file:
-            data = json.load(file)
-            return [info["Unique ID"].replace("0x", "GPU-") for info in data.values()]
-    except FileNotFoundError:
-        print("GPU IDs file not found.")
-        return []
-    except json.JSONDecodeError:
-        print("Error decoding JSON from the file.")
-        return []
+# def load_gpu_ids():
+#     try:
+#         with open(gpu_id_path, 'r') as file:
+#             data = json.load(file)
+#             return [info["Unique ID"].replace("0x", "GPU-") for info in data.values()]
+#     except FileNotFoundError:
+#         print("GPU IDs file not found.")
+#         return []
+#     except json.JSONDecodeError:
+#         print("Error decoding JSON from the file.")
+#         return []
  
 def load_state():
     try:
         with open(gpu_state_path, 'r') as file:
             return json.load(file)
     except FileNotFoundError:
-        ids = load_gpu_ids()
-        ids_map = {item: index for index, item in enumerate(ids)}
+        # ids = load_gpu_ids()
+        # ids_map = {item: index for index, item in enumerate(ids)}
         return {
             "total_gpus": 8,
-            "available_gpus": ids,
+            "available_gpus": list(range(8)), # "available_gpus": ids,
             "in_use_gpus": [], 
-            "ids_map": ids_map
+            # "ids_map": ids_map
         }
 
 def save_state(state):
@@ -54,6 +54,7 @@ def release_gpus(gpu_ids):
         state["available_gpus"] += gpu_ids
         for gpu in gpu_ids:
             state["in_use_gpus"].remove(gpu)
+        state["available_gpus"].sort()
         save_state(state)
 
 def check_available_gpus(required_gpus):
@@ -61,11 +62,11 @@ def check_available_gpus(required_gpus):
         state = load_state()
         return len(state["available_gpus"]) >= required_gpus
 
-def get_indexes(gpu_ids):
-    with FileLock(lock_path):
-        state = load_state()
-        indexes = [state["ids_map"].get(gpu_id) for gpu_id in gpu_ids]
-        return indexes
+# def get_indexes(gpu_ids):
+#     with FileLock(lock_path):
+#         state = load_state()
+#         indexes = [state["ids_map"].get(gpu_id) for gpu_id in gpu_ids]
+#         return indexes
 
 def main():
     action = sys.argv[1]
@@ -83,10 +84,10 @@ def main():
             sys.exit(0)  
         else:
             sys.exit(1)
-    elif action == "reset":
-        gpu_ids = json.loads(sys.argv[2])
-        indexes = get_indexes(gpu_ids)
-        print(json.dumps(indexes))
+    # elif action == "reset":
+    #     gpu_ids = json.loads(sys.argv[2])
+    #     indexes = get_indexes(gpu_ids)
+    #     print(json.dumps(indexes))
 
 if __name__ == "__main__":
     main()

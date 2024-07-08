@@ -23,9 +23,9 @@ function execute_test {
 
 cleanup() {
     echo "Cleaning up state files..."
-    rm -f /tmp/gpu_state.json
+    rm -f /tmp/gpu_state.json   
     rm -f /tmp/gpu_lock
-    rm -f /tmp/gpu_ids.json
+    # rm -f /tmp/gpu_ids.json
     echo "Cleanup complete. Exiting."
 }
 
@@ -33,7 +33,7 @@ trap cleanup EXIT
 
 echo "--- Resetting GPUs"
 
-echo "reset" > /opt/amdgpu/etc/gpu_state
+echo "reset" > /opt/amdgpu/etc/
 
 while true; do
         sleep 3
